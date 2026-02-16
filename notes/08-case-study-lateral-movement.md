@@ -1,7 +1,7 @@
 # 08 — Case Study: Phishing to Lateral Movement
 
 ## 🧠 The Attack Path
-**Scenario:** User clicks link -> Attacker steals Session Cookie -> Moves to Admin Share.
+**Scenario:** User clicks link -> Attacker steals session token or credentials via AiTM -> Moves to Admin Share.
 
 ```mermaid
 graph LR
@@ -43,6 +43,18 @@ rule Detect_Lateral_Movement_After_Logon {
 }
 
 ```
+
+Operational Assumptions & Constraints:
+
+* **Data Quality:** Requires 4624 (LogonType 3) and 5140 events to be centrally collected. Clocks must be reasonably in sync for short-window correlation.
+
+* **Context:** Trusted_Subnets represents known jump boxes, scanners, or management ranges where admin activity is expected.
+
+* **Noise:** Expected false positives include SCCM/software deployment accounts, IT remote support, vulnerability scanners, backup agents, and routine admin-share access.
+
+* **Velocity:** The 5-minute window is intentional. Pivots to SMB admin shares often happen quickly after remote access; tighter windows reduce background noise.
+
+* **Caveat:** Event 5140 is often generated only once per session on the first access attempt. Treat this correlation as "best-effort" and validate against your specific environment's logging volume.
 
 ## 4. Reality Check (Tuning)
 
