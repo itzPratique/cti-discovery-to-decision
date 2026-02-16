@@ -38,7 +38,7 @@ rule Detect_Lateral_Movement_After_Logon {
     $share = EventCode=5140 // Network Share Object Accessed (C$, ADMIN$)
   condition:
     $logon.TargetUser == $share.SubjectUser AND
-    $logon.IpAddress != Trusted_Subnets AND // Exclude Jump Boxes/Scanners
+    NOT in_subnets($logon.IpAddress, Trusted_Subnets) AND
     time_diff($logon.time, $share.time) < 5 minutes
 }
 
